@@ -42,7 +42,7 @@ class MetaDataFilter : public AudioOutput {
 
   /// Writes the data to the decoder
   size_t write(const uint8_t *data, size_t len) override {
-    LOGI("write: %u", (unsinged) len);
+    LOGI("write: %u", (unsigned)len);
     size_t result = len;
     // prevent npe
     if ((p_out == nullptr && p_writer == nullptr) || (data == nullptr) ||
