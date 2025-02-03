@@ -148,11 +148,10 @@ float coef[] = {
     0.000188725585189891
 };
 // 
-uint16_t sample_rate=44100;
-uint8_t channels = 2;                                             // The stream will have 2 channels 
-SineWaveGeneratorT<int16_t> wave(32000);                             // subclass of SoundGeneratorT with max amplitude of 32000
-GeneratedSoundStreamT<int16_t> in_stream(wave);                   // Stream generated from sine wave
-FilteredStream<int16_t, float> in_filtered(in_stream, channels);  // Defiles the filter as BaseConverter
+AudioInfo info(44100, 2, 16);
+SineWaveGenerator wave;                             // subclass of SoundGeneratorT with max amplitude of 32000
+GeneratedSoundStream in_stream(wave);                   // Stream generated from sine wave
+FilteredStream in_filtered(in_stream, info.channels);  // Defiles the filter as BaseConverter
 SdFat sd;
 SdFile file;
 EncodedAudioStream out(&file, new WAVEncoder());                  // encode as wav file
@@ -163,12 +162,8 @@ void setup(){
   Serial.begin(115200);
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Info);  
 
-  auto cfg = wave.defaultConfig();
-  cfg.sample_rate = sample_rate;
-  cfg.channels = channels;
-  cfg.bits_per_sample = 16;
-  wave.begin(cfg, 20);
-  in_stream.begin();
+  in_stream.begin(info);
+  in_stream.setFrequency(20);
   out.begin();
 
   // setup filters on channel 1 only

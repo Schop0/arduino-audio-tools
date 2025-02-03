@@ -11,9 +11,9 @@ namespace audio_tools {
  * @ingroup filter
  **/
 template <typename T>
-class MedianFilter : public Filter<T> {
+class MedianFilterT : public Filter<T> {
  public:
-  MedianFilter(int size = 7) {
+  MedianFilterT(int size = 7) {
     medianBuffer.resize(size);
     medianFilter.numNodes = size;
     medianFilter.medianBuffer = medianBuffer.data();
@@ -31,7 +31,7 @@ class MedianFilter : public Filter<T> {
         nullptr;  // pointer to previous smallest value
   };
 
-  struct MedianFilter_t {
+  struct MedianFilterT_t {
     unsigned int numNodes = 0;             // median node buffer length
     MedianNode_t *medianBuffer = nullptr;  // median node buffer
     MedianNode_t *ageHead = nullptr;       // pointer to oldest value
@@ -39,10 +39,10 @@ class MedianFilter : public Filter<T> {
     MedianNode_t *medianHead = nullptr;    // pointer to median value
   };
 
-  MedianFilter_t medianFilter;
+  MedianFilterT_t medianFilter;
   Vector<MedianNode_t> medianBuffer{0};
 
-  int init(MedianFilter_t *medianFilter) {
+  int init(MedianFilterT_t *medianFilter) {
     if (medianFilter && medianFilter->medianBuffer &&
         (medianFilter->numNodes % 2) && (medianFilter->numNodes > 1)) {
       // initialize buffer nodes
@@ -67,7 +67,7 @@ class MedianFilter : public Filter<T> {
     return -1;
   }
 
-  int insert(MedianFilter_t *medianFilter, T sample) {
+  int insert(MedianFilterT_t *medianFilter, T sample) {
     unsigned int i;
     MedianNode_t *newNode=nullptr, *it=nullptr;
 
@@ -120,5 +120,7 @@ class MedianFilter : public Filter<T> {
     return medianFilter->medianHead->value;
   }
 };
+
+using MedianFilter = MedianFilterT<float>;
 
 }  // namespace audio_tools

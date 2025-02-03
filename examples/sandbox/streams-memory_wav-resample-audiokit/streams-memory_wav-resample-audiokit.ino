@@ -10,7 +10,6 @@ MemoryStream toneG8(g8_sine_raw, g8_sine_raw_len);
 const AudioInfo info(24000, 1, 16);
 AudioBoardStream out(AudioKitEs8388V1);
 //CsvOutput out(Serial);
-//FilteredStream<int16_t, int16_t> filter(out, 1);  
 ResampleStream resample(out); // replace with out
 StreamCopy copier(resample, toneG8, 2048);  // copies sound to out
 int idx_max = 100;
@@ -42,7 +41,7 @@ void setup(void) {
   Serial.begin(115200);
   AudioToolsLogger.begin(Serial, AudioToolsLogLevel::Warning);
 
-  // filter.setFilter(0, new MedianFilter<int16_t>(7));
+  // filter.setFilter(0, new MedianFilterT<int16_t>(7));
   // filter.begin(info);
 
   // open input

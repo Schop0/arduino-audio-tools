@@ -20,7 +20,7 @@ void setup(){
     stop();
   }
 
-  sine_wave.begin(cfg.channels, cfg.sample_rate, N_B4);
+  sine_wave.begin(cfg, N_B4);
   in_stream.begin();
 }
 

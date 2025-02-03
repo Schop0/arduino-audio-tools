@@ -253,7 +253,7 @@ class PDMMonoStreamT : public AudioStream {
       -0.012685775806621504, 0.004114637509913064,  -0.000537879918926308,
       -0.000704420658475743};
   DecimationStreamExt<T> decimation_stream;
-  FilteredStream<T, float> in_filtered{decimation_stream, 1};
+  FilteredStreamT<T, float> in_filtered{decimation_stream, 1};
   FIR<float> fir{coef};
 
   constexpr int8_t bitsPerSample() { return sizeof(T) * 8; }

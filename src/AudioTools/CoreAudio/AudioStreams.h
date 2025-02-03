@@ -1408,17 +1408,17 @@ class CallbackStream : public ModifyingStream {
  * @copyright GPLv3
  */
 template <typename T, class TF>
-class FilteredStream : public ModifyingStream {
+class FilteredStreamT : public ModifyingStream {
  public:
-  FilteredStream() = default;
-  FilteredStream(Stream &stream) : ModifyingStream() { setStream(stream); }
-  FilteredStream(Stream &stream, int channels) : ModifyingStream() {
+  FilteredStreamT() = default;
+  FilteredStreamT(Stream &stream) : ModifyingStream() { setStream(stream); }
+  FilteredStreamT(Stream &stream, int channels) : ModifyingStream() {
     this->channels = channels;
     setStream(stream);
     p_converter = new ConverterNChannels<T, TF>(channels);
   }
-  FilteredStream(Print &stream) : ModifyingStream() { setOutput(stream); }
-  FilteredStream(Print &stream, int channels) : ModifyingStream() {
+  FilteredStreamT(Print &stream) : ModifyingStream() { setOutput(stream); }
+  FilteredStreamT(Print &stream, int channels) : ModifyingStream() {
     this->channels = channels;
     setOutput(stream);
     p_converter = new ConverterNChannels<T, TF>(channels);
@@ -1499,6 +1499,9 @@ class FilteredStream : public ModifyingStream {
   Print *p_print = nullptr;
   ConverterNChannels<T, TF> *p_converter = nullptr;
 };
+
+/// see FilteredStreamT<int16_t, float>
+using FilteredStream = FilteredStreamT<int16_t, float>;
 
 /**
  * @brief A simple class to determine the volume. You can use it as

@@ -32,8 +32,8 @@ protected:
 } testSound;
 
 GeneratedSoundStreamT<int16_t> testStream(testSound);             // Stream generated from sine wave
-FilteredStream<int16_t, int16_t> inFiltered(testStream, info.channels);  // Defiles the filter as BaseConverter
-MedianFilter<int16_t> medianFilter;
+FilteredStreamT<int16_t, int16_t> inFiltered(testStream, info.channels);  // Defiles the filter as BaseConverter
+MedianFilter medianFilter;
 AudioBoardStream out(AudioKitEs8388V1);
 StreamCopy copier(out, inFiltered);                             
 //StreamCopy copier(out, testStream); //compare with this                            

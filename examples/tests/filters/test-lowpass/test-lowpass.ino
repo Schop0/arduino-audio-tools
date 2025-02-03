@@ -2,9 +2,9 @@
 
 AudioInfo info(44100, 2 , 16);
 VolumeMeter meter;
-FilteredStream<int16_t, float> filtered(meter);
-SineWaveGeneratorT<int16_t> sine;
-GeneratedSoundStreamT<int16_t> sine_stream(sine);
+FilteredStream filtered(meter);
+SineWaveGenerator sine;
+GeneratedSoundStream sine_stream(sine);
 StreamCopy copier(filtered, sine_stream);
 float filter_freq = 8000;
 
