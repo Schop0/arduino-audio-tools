@@ -1415,13 +1415,13 @@ class FilteredStreamT : public ModifyingStream {
   FilteredStreamT(Stream &stream, int channels) : ModifyingStream() {
     this->channels = channels;
     setStream(stream);
-    p_converter = new ConverterNChannels<T, TF>(channels);
+    p_converter = new ConverterNChannelsT<T, TF>(channels);
   }
   FilteredStreamT(Print &stream) : ModifyingStream() { setOutput(stream); }
   FilteredStreamT(Print &stream, int channels) : ModifyingStream() {
     this->channels = channels;
     setOutput(stream);
-    p_converter = new ConverterNChannels<T, TF>(channels);
+    p_converter = new ConverterNChannelsT<T, TF>(channels);
   }
 
   void setStream(Stream &stream) {
@@ -1447,7 +1447,7 @@ class FilteredStreamT : public ModifyingStream {
       return false;
     }
     if (p_converter == nullptr) {
-      p_converter = new ConverterNChannels<T, TF>(channels);
+      p_converter = new ConverterNChannelsT<T, TF>(channels);
     }
     return AudioStream::begin();
   }
@@ -1497,7 +1497,7 @@ class FilteredStreamT : public ModifyingStream {
   int channels = 0;
   Stream *p_stream = nullptr;
   Print *p_print = nullptr;
-  ConverterNChannels<T, TF> *p_converter = nullptr;
+  ConverterNChannelsT<T, TF> *p_converter = nullptr;
 };
 
 /// see FilteredStreamT<int16_t, float>

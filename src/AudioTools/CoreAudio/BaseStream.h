@@ -561,7 +561,7 @@ public:
   /// @tparam T 
   /// @param factor 
   template<typename T>
-  void postProcessSmoothTransition(int channels, float factor = 0.01, int remove=0){
+  void postProcessSmoothTransitionT(int channels, float factor = 0.01, int remove=0){
       if (remove>0){
         for (int j=0;j<remove;j++){
           DataNode* node = nullptr;
@@ -574,13 +574,13 @@ public:
       }
 
       // Remove popping noise
-      SmoothTransition<T> clean_start(channels, true, false, factor);
+      SmoothTransitionT<T> clean_start(channels, true, false, factor);
       auto first = *list().begin();   
       if (first!=nullptr){ 
         clean_start.convert(&(first->data[0]),first->len);
       }
 
-      SmoothTransition<T> clean_end(channels, false, true, factor);
+      SmoothTransitionT<T> clean_end(channels, false, true, factor);
       auto last = * (--(list().end()));
       if (last!=nullptr){
         clean_end.convert(&(last->data[0]),last->len);  

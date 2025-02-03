@@ -2,7 +2,7 @@
 # Stream I2S Input to A2DP Bluetooth
 
 ## General Description:
-We implement a A2DP source: We stream the sound input which we read in from the I2S interface to a A2DP sink. We can use any device which provides the sound data via I2S. In order to test the functionality we use the INMP441 microphone. Because the Microphone only provides data on one channel, we the ConverterFillLeftAndRight class to copy the data to the other channel as well.
+We implement a A2DP source: We stream the sound input which we read in from the I2S interface to a A2DP sink. We can use any device which provides the sound data via I2S. In order to test the functionality we use the INMP441 microphone. Because the Microphone only provides data on one channel, we the ConverterFillLeftAndRightT class to copy the data to the other channel as well.
 
 In this Sketch we are using Streams!
 

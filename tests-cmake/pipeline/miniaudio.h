@@ -5580,7 +5580,7 @@ typedef struct
     ma_resampler resampler;
     ma_bool8 hasPreFormatConversion;
     ma_bool8 hasPostFormatConversion;
-    ma_bool8 hasChannelConverter;
+    ma_bool8 hasChannelConverterT;
     ma_bool8 hasResampler;
     ma_bool8 isPassthrough;
 
@@ -42007,7 +42007,7 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "    Conversion:\n");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Pre Format Conversion:  %s\n", pDevice->capture.converter.hasPreFormatConversion  ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Post Format Conversion: %s\n", pDevice->capture.converter.hasPostFormatConversion ? "YES" : "NO");
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Channel Routing:        %s\n", pDevice->capture.converter.hasChannelConverter     ? "YES" : "NO");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Channel Routing:        %s\n", pDevice->capture.converter.hasChannelConverterT     ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Resampling:             %s\n", pDevice->capture.converter.hasResampler            ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Passthrough:            %s\n", pDevice->capture.converter.isPassthrough           ? "YES" : "NO");
             {
@@ -42031,7 +42031,7 @@ MA_API ma_result ma_device_init(ma_context* pContext, const ma_device_config* pC
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "    Conversion:\n");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Pre Format Conversion:  %s\n", pDevice->playback.converter.hasPreFormatConversion  ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Post Format Conversion: %s\n", pDevice->playback.converter.hasPostFormatConversion ? "YES" : "NO");
-            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Channel Routing:        %s\n", pDevice->playback.converter.hasChannelConverter     ? "YES" : "NO");
+            ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Channel Routing:        %s\n", pDevice->playback.converter.hasChannelConverterT     ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Resampling:             %s\n", pDevice->playback.converter.hasResampler            ? "YES" : "NO");
             ma_log_postf(ma_device_get_log(pDevice), MA_LOG_LEVEL_INFO, "      Passthrough:            %s\n", pDevice->playback.converter.isPassthrough           ? "YES" : "NO");
             {
@@ -54135,7 +54135,7 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
 
         /* If the channel converter is not a passthrough we need to enable it. Otherwise we can skip it. */
         if (pConverter->channelConverter.conversionPath != ma_channel_conversion_path_passthrough) {
-            pConverter->hasChannelConverter = MA_TRUE;
+            pConverter->hasChannelConverterT = MA_TRUE;
         }
     }
 
@@ -54154,7 +54154,7 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
 
 
     /* We can simplify pre- and post-format conversion if we have neither channel conversion nor resampling. */
-    if (pConverter->hasChannelConverter == MA_FALSE && pConverter->hasResampler == MA_FALSE) {
+    if (pConverter->hasChannelConverterT == MA_FALSE && pConverter->hasResampler == MA_FALSE) {
         /* We have neither channel conversion nor resampling so we'll only need one of pre- or post-format conversion, or none if the input and output formats are the same. */
         if (pConverter->formatIn == pConverter->formatOut) {
             /* The formats are the same so we can just pass through. */
@@ -54178,7 +54178,7 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
     /* We can enable passthrough optimizations if applicable. Note that we'll only be able to do this if the sample rate is static. */
     if (pConverter->hasPreFormatConversion  == MA_FALSE &&
         pConverter->hasPostFormatConversion == MA_FALSE &&
-        pConverter->hasChannelConverter     == MA_FALSE &&
+        pConverter->hasChannelConverterT     == MA_FALSE &&
         pConverter->hasResampler            == MA_FALSE) {
         pConverter->isPassthrough = MA_TRUE;
     }
@@ -54190,7 +54190,7 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
     } else {
         if (pConverter->channelsIn < pConverter->channelsOut) {
             /* Do resampling first, if necessary. */
-            MA_ASSERT(pConverter->hasChannelConverter == MA_TRUE);
+            MA_ASSERT(pConverter->hasChannelConverterT == MA_TRUE);
 
             if (pConverter->hasResampler) {
                 pConverter->executionPath = ma_data_converter_execution_path_resample_first;
@@ -54199,7 +54199,7 @@ MA_API ma_result ma_data_converter_init_preallocated(const ma_data_converter_con
             }
         } else {
             /* Do channel conversion first, if necessary. */
-            if (pConverter->hasChannelConverter) {
+            if (pConverter->hasChannelConverterT) {
                 if (pConverter->hasResampler) {
                     pConverter->executionPath = ma_data_converter_execution_path_channels_first;
                 } else {
@@ -55037,7 +55037,7 @@ MA_API ma_result ma_data_converter_get_input_channel_map(const ma_data_converter
         return MA_INVALID_ARGS;
     }
 
-    if (pConverter->hasChannelConverter) {
+    if (pConverter->hasChannelConverterT) {
         ma_channel_converter_get_output_channel_map(&pConverter->channelConverter, pChannelMap, channelMapCap);
     } else {
         ma_channel_map_init_standard(ma_standard_channel_map_default, pChannelMap, channelMapCap, pConverter->channelsOut);
@@ -55052,7 +55052,7 @@ MA_API ma_result ma_data_converter_get_output_channel_map(const ma_data_converte
         return MA_INVALID_ARGS;
     }
 
-    if (pConverter->hasChannelConverter) {
+    if (pConverter->hasChannelConverterT) {
         ma_channel_converter_get_input_channel_map(&pConverter->channelConverter, pChannelMap, channelMapCap);
     } else {
         ma_channel_map_init_standard(ma_standard_channel_map_default, pChannelMap, channelMapCap, pConverter->channelsIn);

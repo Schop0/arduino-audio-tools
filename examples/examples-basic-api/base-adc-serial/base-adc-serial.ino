@@ -19,7 +19,7 @@ AnalogAudioStream adc;
 const int32_t max_buffer_len = 1024;
 uint8_t buffer[max_buffer_len];
 // The data has a center of around 26427, so we we need to shift it down to bring the center to 0
-ConverterScaler<int16_t> scaler(1.0, -26427, 32700 );
+ConverterScalerT<int16_t> scaler(1.0, -26427, 32700 );
 
 // Arduino Setup
 void setup(void) {

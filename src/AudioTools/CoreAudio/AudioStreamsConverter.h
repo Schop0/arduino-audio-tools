@@ -96,7 +96,7 @@ class ChannelFormatConverterStreamT : public ReformatBaseStream {
   float factor = 1;
   Vector<T> buffer{0};
   Vector<uint8_t> bufferTmp{0};
-  ChannelConverter<T> converter;
+  ChannelConverterT<T> converter;
 
   size_t convert(const uint8_t *in_data, size_t size) {
     size_t result;

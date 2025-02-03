@@ -52,9 +52,9 @@ class NOPConverter : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class ConverterScaler : public BaseConverter {
+class ConverterScalerT : public BaseConverter {
  public:
-  ConverterScaler(float factor, T offset, T maxValue, int channels = 2) {
+  ConverterScalerT(float factor, T offset, T maxValue, int channels = 2) {
     this->factor_value = factor;
     this->maxValue = maxValue;
     this->offset_value = offset;
@@ -244,9 +244,9 @@ class ConverterAutoCenter : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class ConverterSwitchLeftAndRight : public BaseConverter {
+class ConverterSwitchLeftAndRightT : public BaseConverter {
  public:
-  ConverterSwitchLeftAndRight(int channels = 2) { this->channels = channels; }
+  ConverterSwitchLeftAndRightT(int channels = 2) { this->channels = channels; }
 
   size_t convert(uint8_t *src, size_t byte_count) override {
     if (channels == 2) {
@@ -267,7 +267,7 @@ class ConverterSwitchLeftAndRight : public BaseConverter {
 };
 
 /**
- * @brief Configure ConverterFillLeftAndRight
+ * @brief Configure ConverterFillLeftAndRightT
  * @ingroup convert
  */
 enum FillLeftAndRightStatus { Auto, LeftIsEmpty, RightIsEmpty };
@@ -282,9 +282,9 @@ enum FillLeftAndRightStatus { Auto, LeftIsEmpty, RightIsEmpty };
  */
 
 template <typename T>
-class ConverterFillLeftAndRight : public BaseConverter {
+class ConverterFillLeftAndRightT : public BaseConverter {
  public:
-  ConverterFillLeftAndRight(FillLeftAndRightStatus config = Auto,
+  ConverterFillLeftAndRightT(FillLeftAndRightStatus config = Auto,
                             int channels = 2) {
     this->channels = channels;
     switch (config) {
@@ -365,9 +365,9 @@ class ConverterFillLeftAndRight : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class ConverterToInternalDACFormat : public BaseConverter {
+class ConverterToInternalDACFormatT : public BaseConverter {
  public:
-  ConverterToInternalDACFormat(int channels = 2) { this->channels = channels; }
+  ConverterToInternalDACFormatT(int channels = 2) { this->channels = channels; }
 
   size_t convert(uint8_t *src, size_t byte_count) override {
     int size = byte_count / channels / sizeof(T);
@@ -1233,11 +1233,11 @@ class ChannelBinDiff : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class ChannelEnhancer {
+class ChannelEnhancerT {
  public:
-  ChannelEnhancer() = default;
+  ChannelEnhancerT() = default;
 
-  ChannelEnhancer(int channelCountOfTarget, int channelCountOfSource) {
+  ChannelEnhancerT(int channelCountOfTarget, int channelCountOfSource) {
     from_channels = channelCountOfSource;
     to_channels = channelCountOfTarget;
   }
@@ -1288,11 +1288,11 @@ class ChannelEnhancer {
  * @tparam T
  */
 template <typename T>
-class ChannelConverter {
+class ChannelConverterT {
  public:
-  ChannelConverter() = default;
+  ChannelConverterT() = default;
 
-  ChannelConverter(int channelCountOfTarget, int channelCountOfSource) {
+  ChannelConverterT(int channelCountOfTarget, int channelCountOfSource) {
     from_channels = channelCountOfSource;
     to_channels = channelCountOfTarget;
   }
@@ -1328,7 +1328,7 @@ class ChannelConverter {
   }
 
  protected:
-  ChannelEnhancer<T> enhancer;
+  ChannelEnhancerT<T> enhancer;
   ChannelReducerT<T> reducer;
   int from_channels;
   int to_channels;
@@ -1340,18 +1340,18 @@ class ChannelConverter {
  * @tparam T
  */
 template <typename T>
-class MultiConverter : public BaseConverter {
+class MultiConverterT : public BaseConverter {
  public:
-  MultiConverter() {}
+  MultiConverterT() {}
 
-  MultiConverter(BaseConverter &c1) { add(c1); }
+  MultiConverterT(BaseConverter &c1) { add(c1); }
 
-  MultiConverter(BaseConverter &c1, BaseConverter &c2) {
+  MultiConverterT(BaseConverter &c1, BaseConverter &c2) {
     add(c1);
     add(c2);
   }
 
-  MultiConverter(BaseConverter &c1, BaseConverter &c2, BaseConverter &c3) {
+  MultiConverterT(BaseConverter &c1, BaseConverter &c2, BaseConverter &c3) {
     add(c1);
     add(c2);
     add(c3);
@@ -1371,71 +1371,6 @@ class MultiConverter : public BaseConverter {
  private:
   Vector<BaseConverter *> converters;
 };
-
-// /**
-//  * @brief Converts e.g. 24bit data to the indicated smaller or bigger data
-//  type
-//  * @ingroup convert
-//  * @author Phil Schatzmann
-//  * @copyright GPLv3
-//  *
-//  * @tparam T
-//  */
-// template<typename FromType, typename ToType>
-// class FormatConverter {
-//     public:
-//         FormatConverter(ToType (*converter)(FromType v)){
-//             this->convert_ptr = converter;
-//         }
-
-//         FormatConverter( float factor, float clip){
-//             this->factor = factor;
-//             this->clip = clip;
-//         }
-
-//         // The data is provided as int24_t tgt[][2] but  returned as int24_t
-//         size_t convert(uint8_t *src, uint8_t *target, size_t byte_count_src)
-//         {
-//             return convert((FromType *)src, (ToType*)target, byte_count_src
-//             );
-//         }
-
-//         // The data is provided as int24_t tgt[][2] but  returned as int24_t
-//         size_t convert(FromType *src, ToType *target, size_t byte_count_src)
-//         {
-//             int size = byte_count_src / sizeof(FromType);
-//             FromType *s = src;
-//             ToType *t = target;
-//             if (convert_ptr!=nullptr){
-//                 // standard conversion
-//                 for (int i=size; i>0; i--) {
-//                     *t = (*convert_ptr)(*s);
-//                     t++;
-//                     s++;
-//                 }
-//             } else {
-//                 // conversion using indicated factor
-//                 for (int i=size; i>0; i--) {
-//                     float tmp = factor * *s;
-//                     if (tmp>clip){
-//                         tmp=clip;
-//                     } else if (tmp<-clip){
-//                         tmp = -clip;
-//                     }
-//                     *t = tmp;
-//                     t++;
-//                     s++;
-//                 }
-//             }
-//             return size*sizeof(ToType);
-//         }
-
-//     private:
-//         ToType (*convert_ptr)(FromType v) = nullptr;
-//         float factor=0;
-//         float clip=0;
-
-// };
 
 /**
  * @brief Reads n numbers from an Arduino Stream
@@ -1511,9 +1446,9 @@ class NumberReader {
  * @tparam T
  */
 template <typename T>
-class Converter1Channel : public BaseConverter {
+class Converter1ChannelT : public BaseConverter {
  public:
-  Converter1Channel(Filter<T> &filter) { this->p_filter = &filter; }
+  Converter1ChannelT(Filter<T> &filter) { this->p_filter = &filter; }
 
   size_t convert(uint8_t *src, size_t size) override {
     T *data = (T *)src;
@@ -1534,10 +1469,10 @@ class Converter1Channel : public BaseConverter {
  * @tparam T
  */
 template <typename T, typename FT>
-class ConverterNChannels : public BaseConverter {
+class ConverterNChannelsT : public BaseConverter {
  public:
   /// Default Constructor
-  ConverterNChannels(int channels) {
+  ConverterNChannelsT(int channels) {
     this->channels = channels;
     filters = new Filter<FT> *[channels];
     // make sure that we have 1 filter per channel
@@ -1547,7 +1482,7 @@ class ConverterNChannels : public BaseConverter {
   }
 
   /// Destructor
-  ~ConverterNChannels() {
+  ~ConverterNChannelsT() {
     for (int j = 0; j < channels; j++) {
       if (filters[j] != nullptr) {
         delete filters[j];
@@ -1601,9 +1536,9 @@ class ConverterNChannels : public BaseConverter {
  */
 
 template <typename T>
-class SilenceRemovalConverter : public BaseConverter {
+class SilenceRemovalConverterT : public BaseConverter {
  public:
-  SilenceRemovalConverter(int n = 8, int aplidudeLimit = 2) {
+  SilenceRemovalConverterT(int n = 8, int aplidudeLimit = 2) {
     set(n, aplidudeLimit);
   }
 
@@ -1676,9 +1611,9 @@ class SilenceRemovalConverter : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class PoppingSoundRemover : public BaseConverter {
+class PoppingSoundRemoverT : public BaseConverter {
  public:
-  PoppingSoundRemover(int channels, bool fromBeginning, bool fromEnd) {
+  PoppingSoundRemoverT(int channels, bool fromBeginning, bool fromEnd) {
     this->channels = channels;
     from_beginning = fromBeginning;
     from_end = fromEnd;
@@ -1735,9 +1670,9 @@ class PoppingSoundRemover : public BaseConverter {
  * @tparam T
  */
 template <typename T>
-class SmoothTransition : public BaseConverter {
+class SmoothTransitionT : public BaseConverter {
  public:
-  SmoothTransition(int channels, bool fromBeginning, bool fromEnd,
+  SmoothTransitionT(int channels, bool fromBeginning, bool fromEnd,
                    float inc = 0.01) {
     this->channels = channels;
     this->inc = inc;
@@ -1789,9 +1724,9 @@ class SmoothTransition : public BaseConverter {
  * @tparam T, Cn, Cx, S
  */
 template <typename T, size_t Cn, size_t Cx, size_t S>
-class CopyChannels : public BaseConverter {
+class CopyChannelsT : public BaseConverter {
  public:
-  CopyChannels() : _max_val(0), _counter(0), _prev_ms(0) {}
+  CopyChannelsT() : _max_val(0), _counter(0), _prev_ms(0) {}
 
   size_t convert(uint8_t *src, size_t size) {
     T *chan = (T *)src;
@@ -1813,7 +1748,7 @@ class CopyChannels : public BaseConverter {
       uint32_t now = millis();
       if (now - _prev_ms > 1000) {
         _prev_ms = now;
-        LOGI("CopyChannels samples: %u, amplitude: %d", _counter, _max_val);
+        LOGI("CopyChannelsT samples: %u, amplitude: %d", _counter, _max_val);
         _max_val = 0;
       }
     }
