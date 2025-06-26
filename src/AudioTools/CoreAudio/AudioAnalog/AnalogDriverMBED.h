@@ -37,7 +37,7 @@ public:
       return false;
     }
     info = cfg;
-    auto_center.begin(config.channels, config.bits_per.sample);
+    auto_center.begin(cfg.channels, cfg.bits_per_sample);
     int n_samples = cfg.buffer_size / (cfg.bits_per_sample / 8);
     ring_buffer.resize(n_samples);
     switch (info.channels) {
@@ -117,7 +117,7 @@ public:
     }
 
     // make sure that the center is at 0
-    if (adc_config.is_auto_center_read){
+    if (info.is_auto_center_read){
         auto_center.convert(dest, result);
     }
 
@@ -143,7 +143,7 @@ protected:
     case 1: {
       SampleBuffer buf = dac1.dequeue();
       for (size_t i = 0; i < buf.size(); i++) {
-        buf[i] = ring_buffer.read();
+        ring_buffer.read(buf[i]);
         result += 2;
       }
       dac1.write(buf);
@@ -152,8 +152,8 @@ protected:
       SampleBuffer buf1 = dac1.dequeue();
       SampleBuffer buf2 = dac2.dequeue();
       for (size_t i = 0; i < buf1.size(); i += 2) {
-        buf1[i] = ring_buffer.read();
-        buf2[i] = ring_buffer.read();
+        ring_buffer.read(buf1[i]);
+        ring_buffer.read(buf2[i]);
         result += 4;
       }
       dac1.write(buf1);
